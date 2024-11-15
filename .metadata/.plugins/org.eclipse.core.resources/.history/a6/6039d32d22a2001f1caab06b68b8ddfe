@@ -1,0 +1,44 @@
+package pages;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+
+import java.util.List;
+
+public class AdminPage {
+    private WebDriver driver;
+
+    public AdminPage(WebDriver driver) {
+        this.driver = driver;
+    }
+
+    private By menu = By.xpath("//ul[@class='oxd-main-menu']//li//span");
+    private By uname = By.xpath("//input[@label='Username']");
+    private By userrole = By.xpath("//div[@role='listbox']//span[contains(text(),'User Role')]");
+    private By userOptions = By.xpath("//div[@role='listbox']/div[@role='option']");
+    private By searchBtn = By.xpath("//button[@type='submit']");
+
+    public int getMenuCount() {
+        List<WebElement> list = driver.findElements(menu);
+        System.out.println("Total menu options are: " + list.size());
+        return list.size();
+    }
+
+    public void searchEmpByUsername(String name) {
+        driver.findElement(uname).sendKeys(name);
+        driver.findElement(searchBtn).click();
+    }
+
+    public void searchEmpByUserRole(String role) {
+        driver.findElement(userrole).click();
+        List<WebElement> list = driver.findElements(userOptions);
+        for (WebElement option : list) {
+            if (option.getText().contains(role)) {
+                option.click();
+                break;
+            }
+        }
+        driver.findElement(searchBtn).click();
+    }
+}

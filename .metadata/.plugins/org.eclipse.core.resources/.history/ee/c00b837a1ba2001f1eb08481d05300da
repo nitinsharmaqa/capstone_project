@@ -1,0 +1,48 @@
+package testcases;
+
+import config.Config;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+import pages.AdminPage;
+import pages.LoginPage;
+
+import java.time.Duration;
+
+public class AdminTest {
+    WebDriver driver;
+    AdminPage adminPage;
+    LoginPage loginPage;
+
+    @BeforeClass
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(Config.IMPLICIT_WAIT));
+        driver.get(Config.BASE_URL);
+        
+        loginPage = new LoginPage(driver);
+        adminPage = new AdminPage(driver);
+        
+        // Login first to access Admin page
+        loginPage.doLogin("Admin", "admin123");
+    }
+
+    @Test
+    public void testMenuCount() {
+        int menuCount = adminPage.getMenuCount();
+        assert menuCount == 12 : "Menu count mismatch";
+    }
+
+    @Test
+    public void testSearchByUsername() {
+        adminPage.searchEmpByUsername("Admin");
+        // Assert based on the record found
+    }
+
+    @Test
+    public void testSearchByUserRole() {
+        adminPage.searchEmpByUserRole("Admin");
+        // Assert based on the record found
+    }
+}

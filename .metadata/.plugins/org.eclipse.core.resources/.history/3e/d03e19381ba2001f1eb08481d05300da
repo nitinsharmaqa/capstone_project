@@ -1,0 +1,31 @@
+package tests;
+
+import org.testng.annotations.Test;
+import pages.LoginPage;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class LoginTest {
+    WebDriver driver;
+    LoginPage loginPage;
+
+    @BeforeClass
+    public void setUp() {
+        driver = new ChromeDriver();
+        driver.get("https://example.com");
+        loginPage = new LoginPage(driver);
+    }
+
+    @Test(dataProvider = "excelData")
+    public void testLogin(String username, String password) {
+        loginPage.doLogin(username, password);
+    }
+
+    @DataProvider(name = "excelData")
+    public Object[][] excelData() {
+        // Implement your DataProvider to read from Data.xlsx
+        return new Object[][] { {"Admin", "admin123"} };
+    }
+}
