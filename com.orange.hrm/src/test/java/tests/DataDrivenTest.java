@@ -15,7 +15,7 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import utils.CustomData;  // Assuming CustomData is your data provider class
+import utils.CustomData; 
 
 import java.io.IOException;
 import java.time.Duration;
