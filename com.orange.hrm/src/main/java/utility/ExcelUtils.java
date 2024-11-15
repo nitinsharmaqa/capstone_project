@@ -35,6 +35,6 @@ public class ExcelUtils {
     // Excel Data Provider
     @org.testng.annotations.DataProvider(name = "loginData")
     public static Object[][] loginData() throws IOException {
-        return getTestData("C:\\Users\\ADMIN\\Dropbox\\Developer\\SeleniumWD5\\com.orange.hrm\\src\\test\\resources\\Data.xlsx", "userdata");
+        return getTestData(System.getProperty("user.dir")+"\\src\\test\\resources\\Data.xlsx", "userdata");
     }
 }

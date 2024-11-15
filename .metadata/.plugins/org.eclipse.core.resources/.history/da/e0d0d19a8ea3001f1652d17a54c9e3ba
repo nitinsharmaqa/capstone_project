@@ -1,0 +1,100 @@
+package test;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
+import org.testng.annotations.*;
+import com.aventstack.extentreports.*;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+
+import utility.ExcelUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+
+public class OrangeHRMLoginTest {
+    WebDriver driver;
+    ExtentReports extent;
+    ExtentTest test;
+
+    @BeforeClass
+    public void setup() {
+        // Setup Extent Report
+        ExtentSparkReporter spark = new ExtentSparkReporter("ExtentReport.html");
+        extent = new ExtentReports();
+        extent.attachReporter(spark);
+    }
+
+    @BeforeMethod
+    public void initializeDriver() {
+        // Setup WebDriver
+        System.setProperty("webdriver.chrome.driver", "driver\\chromedriver_130.exe"); // Change path to your chromedriver
+        driver = new ChromeDriver();
+        driver.get("https://opensource-demo.orangehrmlive.com/"); // OrangeHRM URL
+    }
+
+    @Test(dataProvider = "loginData", dataProviderClass = ExcelUtils.class)
+    public void testLogin(String username, String password, String expectedResult) throws IOException {
+        test = extent.createTest("Test Login for " + username);
+
+        // Wait for the username field to be visible before interacting
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+        WebElement usernameField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("username")));
+        WebElement passwordField = wait.until(ExpectedConditions.visibilityOfElementLocated(By.name("password")));
+        WebElement loginButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[normalize-space(text()='Login')]")));
+
+        // Find the elements for login
+        usernameField.sendKeys(username);
+        passwordField.sendKeys(password);
+        loginButton.click();
+
+        // Explicit wait until the Dashboard is visible (check for a unique element on the dashboard)
+        try {
+            // Wait for the dashboard to load by waiting for an element that appears only after a successful login (e.g., a specific button or element in the dashboard)
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("menu_dashboard_index"))); // Example: waiting for the dashboard menu button to be visible
+            test.info("Dashboard is visible, login successful.");
+        } catch (TimeoutException e) {
+            test.fail("Dashboard did not appear. Login failed.");
+        }
+
+        // Capture screenshot after login attempt
+        takeScreenshot("LoginAttempt_" + username);
+
+        // Check for valid login (Dashboard appears for valid login)
+        boolean isLoginSuccessful = driver.getTitle().contains("OrangeHRM");
+
+        // Assertion based on expected result
+        if (expectedResult.equals("Pass")) {
+            Assert.assertTrue(isLoginSuccessful, "Login should be successful for valid credentials");
+        } else {
+            Assert.assertFalse(isLoginSuccessful, "Login should fail for invalid credentials");
+        }
+
+        // Logout if login was successful
+        if (isLoginSuccessful) {
+            WebElement logoutButton = driver.findElement(By.xpath("//h6[text()='Dashboard']"));
+            logoutButton.click();
+            driver.findElement(By.linkText("Logout")).click();
+        }
+    }
+
+    // Method to capture screenshot
+    public void takeScreenshot(String testName) throws IOException {
+        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        File destFile = new File("screenshots/" + testName + ".png");
+        org.apache.commons.io.FileUtils.copyFile(screenshot, destFile);
+    }
+
+    @AfterMethod
+    public void teardown() {
+        driver.quit();
+    }
+
+    @AfterClass
+    public void generateReport() {
+        extent.flush(); // Generate and save the report after all tests have completed
+    }
+}

@@ -3,15 +3,17 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="test.OrangeHRMLoginTest">
+      <class name="adminTests.OrangeHRMTest">
         <methods>
-          <include name="testLogin" invocation-numbers="0 1 2"/>
-          <include name="teardown"/>
+          <include name="testSearchByUserStatus"/>
+          <include name="testSearchByUserRole"/>
+          <include name="testLeftMenuOptionsCount"/>
+          <include name="testSearchByUserName"/>
+          <include name="testLogin"/>
           <include name="setup"/>
-          <include name="generateReport"/>
-          <include name="initializeDriver"/>
+          <include name="teardown"/>
         </methods>
-      </class> <!-- test.OrangeHRMLoginTest -->
+      </class> <!-- adminTests.OrangeHRMTest -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
