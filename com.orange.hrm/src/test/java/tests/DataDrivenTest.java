@@ -15,7 +15,8 @@ import com.aventstack.extentreports.ExtentReports;
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
-import utils.CustomData; 
+import utils.CustomData;
+import utils.ScreenshotUtil;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -31,7 +32,7 @@ public class DataDrivenTest {
         ExtentSparkReporter sparkReporter = new ExtentSparkReporter(System.getProperty("user.dir") + "/test-output/ExtentReport.html");
         extent = new ExtentReports();
         extent.attachReporter(sparkReporter);
-        extent.setSystemInfo("Tester", "Nitin"); 
+        extent.setSystemInfo("Tester", "Nitin");
     }
 
     @BeforeMethod	
@@ -61,25 +62,32 @@ public class DataDrivenTest {
             // Wait for the page to load
             Thread.sleep(2000);
 
+            // Capture screenshot before assertion for login validation
+            captureScreenshot("BeforeAssertion_Login_" + username);
+
             // Check if login was successful or not
             if (username.equals(username) && password.equals(password)) {
+                // Capture screenshot before successful assertion
+                captureScreenshot("SuccessfulLogin_" + username);
                 Assert.assertTrue(driver.getCurrentUrl().contains("dashboard"), "Login Failed");
                 test.log(Status.PASS, "Login Successful");
             } else {
+                // Capture screenshot before failed assertion
+                captureScreenshot("FailedLogin_" + username);
                 Assert.assertFalse(driver.getCurrentUrl().contains("dashboard"), "Login should have failed");
                 test.log(Status.PASS, "Invalid login attempt failed as expected");
             }
         } catch (Exception e) {
             test.log(Status.FAIL, "Test failed due to exception: " + e.getMessage());
-            captureScreenshot("LoginTest_" + username);
+            captureScreenshot("Exception_LoginTest_" + username);
         }
     }
 
+    // Method to capture a screenshot and save it in the specified directory
     public void captureScreenshot(String fileName) {
         try {
-            // Updated to save the screenshot in the correct folder
-            utils.ScreenshotUtil.captureScreenshot(driver, "src//test//resources//Screenshots//" + fileName);  
-            test.addScreenCaptureFromPath("Screenshots/" + fileName + ".png");
+            ScreenshotUtil.captureScreenshot(driver, fileName);
+            test.addScreenCaptureFromPath("//Screenshots//" + fileName + ".png");
             test.log(Status.INFO, "Screenshot taken: " + fileName);
         } catch (IOException e) {
             test.log(Status.WARNING, "Failed to capture screenshot: " + e.getMessage());
@@ -95,6 +103,6 @@ public class DataDrivenTest {
 
     @AfterClass
     public void tearDownReport() {
-        extent.flush(); // Writes all test information to the report file
+        extent.flush(); 
     }
 }
