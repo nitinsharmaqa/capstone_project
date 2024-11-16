@@ -1,0 +1,55 @@
+package pages;
+
+import org.openqa.selenium.*;
+import org.openqa.selenium.support.ui.*;
+
+import java.time.Duration;
+import java.util.List;
+
+public class AdminPage {
+    WebDriver driver;
+    WebDriverWait wait;
+
+    public AdminPage(WebDriver driver) {
+        this.driver = driver;
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(30)); // Explicit wait for elements
+    }
+
+    public void clickAdminMenu() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//*[contains(@class, 'oxd-input') and contains(@class, 'oxd-input--active')]"))).click();
+    }
+    
+    public int getLeftMenuOptionsCount() {
+        List<WebElement> menuOptions = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//ul[@class='oxd-main-menu']//li//span")));
+        return menuOptions.size();
+    }
+
+    public void searchByUserName(String username) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//input[@class='oxd-input oxd-input--active']\r\n"))).sendKeys(username);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("searchBtn"))).click();
+    }
+
+    public void searchByUserRole(String role) {
+        WebElement userRoleDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//div[@class='oxd-select-text--arrow'])[1]")));
+        Select select = new Select(userRoleDropdown);
+        select.selectByVisibleText(role);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("searchBtn"))).click();
+    }
+
+    public void searchByUserStatus(String status) {
+        WebElement statusDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("(//div[@class='oxd-select-text--arrow'])[2]")));
+        Select select = new Select(statusDropdown);
+        select.selectByVisibleText(status);
+        wait.until(ExpectedConditions.elementToBeClickable(By.id("searchBtn"))).click();
+    }
+
+    public int getTotalRecordsFound() {
+        List<WebElement> records = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath("//span[contains(@class, 'oxd-text') and contains(text(), 'No Records Found')]")));
+        return records.size() - 1; // Exclude header row
+    }
+
+    public void refreshPage() {
+        driver.navigate().refresh();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("menu_admin_viewAdminModule")));
+    }
+}

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+    <fullyQualifiedTypeName name="utility.ExcelUtils"/>
+    <fullyQualifiedTypeName name="java.io.File"/>
+    <fullyQualifiedTypeName name="java.time.Duration"/>
+    <fullyQualifiedTypeName name="adminPages.AdminPage"/>
+    <fullyQualifiedTypeName name="adminPages.LoginPage"/>
+</qualifiedTypeNameHistroy>
